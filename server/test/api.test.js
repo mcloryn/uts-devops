@@ -20,7 +20,7 @@ test('health check mengembalikan status ok', async () => {
 
 test('daftar ikan berisi data awal', async () => {
   const data = await (await fetch(`${base}/api/ikan`)).json();
-  assert.ok(data.length >= 8);
+  assert.ok(data.length >= 100);
 });
 
 test('filter berdasarkan jenis', async () => {
