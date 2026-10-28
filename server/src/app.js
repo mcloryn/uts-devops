@@ -60,6 +60,9 @@ export function createApp({ dataFile, publicDir, uploadDir, version = 'dev' } = 
     if (!/^#[0-9a-fA-F]{6}$/.test(hex) || Number(harga) < 0) {
       return res.status(400).json({ error: 'Format warna atau harga tidak valid' });
     }
+    if (gambar && !/^https?:\/\/\S+$/.test(gambar)) {
+      return res.status(400).json({ error: 'URL foto harus diawali http:// atau https://' });
+    }
     if (fotoData) {
       const foto = simpanFoto(fotoData);
       if (foto.error) return res.status(400).json({ error: foto.error });

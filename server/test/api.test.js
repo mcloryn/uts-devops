@@ -85,3 +85,13 @@ test('file selain gambar ditolak', async () => {
   });
   assert.equal(res.status, 400);
 });
+
+test('foto dari URL disimpan apa adanya', async () => {
+  const url = 'https://contoh.com/cupang.jpg';
+  const res = await fetch(`${base}/api/ikan`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nama: 'Cupang URL', jenis: 'Giant', warna: 'Merah', gambar: url }),
+  });
+  assert.equal(res.status, 201);
+  assert.equal((await res.json()).gambar, url);
+});

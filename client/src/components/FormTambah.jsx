@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import BettaSvg from './BettaSvg.jsx';
 
-const KOSONG = { nama: '', jenis: 'Halfmoon', warna: '', hex: '#d62839', asal: '', harga: '', deskripsi: '' };
+const KOSONG = { nama: '', jenis: 'Halfmoon', warna: '', hex: '#d62839', asal: '', harga: '', deskripsi: '', gambar: '' };
 
 // Mengecilkan foto di browser (maks. 1000 px, JPEG) supaya upload cepat dan hemat penyimpanan.
 function kecilkanFoto(file) {
@@ -26,6 +26,8 @@ export default function FormTambah({ daftarJenis, onSimpan, onBatal }) {
   const [foto, setFoto] = useState('');
   const [error, setError] = useState('');
   const [menyimpan, setMenyimpan] = useState(false);
+  const [inputFile, setInputFile] = useState(0); // untuk mengosongkan pilihan file
+  const pratinjau = foto || form.gambar;
   const ubah = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   async function pilihFoto(e) {
@@ -44,9 +46,11 @@ export default function FormTambah({ daftarJenis, onSimpan, onBatal }) {
     e.preventDefault();
     setMenyimpan(true);
     try {
-      await onSimpan({ ...form, harga: Number(form.harga || 0), fotoData: foto });
+      // Jika memilih file, foto upload yang dipakai; jika tidak, pakai URL (boleh kosong).
+      await onSimpan({ ...form, harga: Number(form.harga || 0), fotoData: foto, gambar: foto ? '' : form.gambar.trim() });
       setForm(KOSONG);
       setFoto('');
+      setInputFile((n) => n + 1);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -57,7 +61,7 @@ export default function FormTambah({ daftarJenis, onSimpan, onBatal }) {
   return (
     <form className="form" onSubmit={submit}>
       <div className="form-preview">
-        {foto ? <img src={foto} alt="Pratinjau foto ikan" /> : <BettaSvg hex={form.hex} jenis={form.jenis} />}
+        {pratinjau ? <img src={pratinjau} alt="Pratinjau foto ikan" /> : <BettaSvg hex={form.hex} jenis={form.jenis} />}
       </div>
       <div className="form-grid">
         <label>Nama ikan<input name="nama" value={form.nama} onChange={ubah} required placeholder="mis. Plakat Fancy" /></label>
@@ -70,8 +74,12 @@ export default function FormTambah({ daftarJenis, onSimpan, onBatal }) {
         <label>Warna ilustrasi<input type="color" name="hex" value={form.hex} onChange={ubah} /></label>
         <label>Asal<input name="asal" value={form.asal} onChange={ubah} placeholder="mis. Indonesia" /></label>
         <label>Harga (Rp)<input type="number" min="0" name="harga" value={form.harga} onChange={ubah} /></label>
-        <label className="lebar">Foto ikan (opsional, dari penyimpanan)
-          <input type="file" accept="image/png, image/jpeg, image/webp" onChange={pilihFoto} />
+        <label>Upload foto dari penyimpanan (opsional)
+          <input key={inputFile} type="file" accept="image/png, image/jpeg, image/webp" onChange={pilihFoto} />
+        </label>
+        <label>atau URL foto (opsional)
+          <input name="gambar" value={form.gambar} onChange={ubah} placeholder="https://..." disabled={!!foto}
+            title={foto ? 'Hapus pilihan file dulu untuk memakai URL' : ''} />
         </label>
         <label className="lebar">Deskripsi<textarea name="deskripsi" rows="3" value={form.deskripsi} onChange={ubah} /></label>
       </div>
