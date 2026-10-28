@@ -19,6 +19,9 @@ export default function DetailModal({ ikan, onTutup, onHapus }) {
           <dt>Harga</dt><dd>{rupiah(ikan.harga)}</dd>
           <dt>Disukai</dt><dd>{ikan.suka} kali</dd>
         </dl>
+        {ikan.sumberFoto && (
+          <p className="kredit">Foto: <a href={ikan.sumberFoto} target="_blank" rel="noreferrer">Wikimedia Commons</a></p>
+        )}
         <button className="hapus" onClick={() => onHapus(ikan.id)}>Hapus dari galeri</button>
       </div>
     </div>

@@ -77,7 +77,7 @@ export default function App() {
         {ikan.length === 0 && <p className="kosong">Tidak ada ikan yang cocok dengan pencarian.</p>}
       </main>
 
-      <footer className="wrap footer">Galeri Ikan Cupang · versi {versi || '-'} · UTS DevOps IF-B</footer>
+      <footer className="wrap footer">Galeri Ikan Cupang · versi {versi || '-'} · UTS DevOps IF-B · Foto: Wikimedia Commons</footer>
 
       <DetailModal ikan={dipilih} onTutup={() => setDipilih(null)} onHapus={hapus} />
     </>

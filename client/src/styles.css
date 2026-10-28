@@ -81,3 +81,5 @@ input[type='color'] { padding: 2px; height: 42px; }
   .form-grid { grid-template-columns: 1fr; }
   .toolbar { flex-direction: column; }
 }
+.kredit { font-size: .8rem; color: var(--redup); }
+.kredit a { color: var(--redup); }

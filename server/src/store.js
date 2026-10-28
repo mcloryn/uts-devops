@@ -10,7 +10,7 @@ export function createStore(filePath) {
     // Data lama (dari versi sebelumnya) belum punya foto: lengkapi dari data awal.
     for (const ikan of data) {
       const asal = seed.find((s) => s.id === ikan.id && s.nama === ikan.nama);
-      if (asal && !ikan.gambar) ikan.gambar = asal.gambar;
+      if (asal && !ikan.gambar) Object.assign(ikan, { gambar: asal.gambar, sumberFoto: asal.sumberFoto });
     }
   } else {
     data = structuredClone(seed);
