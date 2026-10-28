@@ -50,7 +50,7 @@ export default function App() {
       <header className="hero">
         <div className="wrap">
           <p className="eyebrow">Koleksi Betta splendens</p>
-          <h1>Galeri Ikan Cupang hias</h1>
+          <h1>Galeri Ikan Cupang hias kelompok kami</h1>
           <p className="sub">Kenali jenis-jenis cupang hias, dari Halfmoon sampai Crowntail asli Indonesia.</p>
         </div>
       </header>
