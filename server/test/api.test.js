@@ -62,3 +62,26 @@ test('tombol suka menambah jumlah suka', async () => {
 test('ikan yang tidak ada menghasilkan 404', async () => {
   assert.equal((await fetch(`${base}/api/ikan/999`)).status, 404);
 });
+
+test('upload foto dari perangkat', async () => {
+  // PNG 1x1 piksel
+  const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+  const res = await fetch(`${base}/api/ikan`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nama: 'Cupang Foto Sendiri', jenis: 'Halfmoon', warna: 'Biru', fotoData: `data:image/png;base64,${png}` }),
+  });
+  assert.equal(res.status, 201);
+  const ikan = await res.json();
+  assert.match(ikan.gambar, /^\/uploads\/.+\.png$/);
+  const foto = await fetch(`${base}${ikan.gambar}`);
+  assert.equal(foto.status, 200);
+  assert.equal(foto.headers.get('content-type'), 'image/png');
+});
+
+test('file selain gambar ditolak', async () => {
+  const res = await fetch(`${base}/api/ikan`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nama: 'Bukan Foto', jenis: 'Plakat', warna: 'Merah', fotoData: 'data:text/plain;base64,aGFsbw==' }),
+  });
+  assert.equal(res.status, 400);
+});
