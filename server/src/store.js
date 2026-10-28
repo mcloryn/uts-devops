@@ -7,10 +7,12 @@ export function createStore(filePath) {
   let data;
   if (filePath && fs.existsSync(filePath)) {
     data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    // Data lama (dari versi sebelumnya) belum punya foto: lengkapi dari data awal.
+    // Perbarui data awal dari versi sebelumnya (foto dan keterangan), jumlah suka tetap.
     for (const ikan of data) {
-      const asal = seed.find((s) => s.id === ikan.id && s.nama === ikan.nama);
-      if (asal && !ikan.gambar) Object.assign(ikan, { gambar: asal.gambar, sumberFoto: asal.sumberFoto });
+      const asal = seed.find((s) => s.id === ikan.id);
+      if (asal && (!ikan.gambar || ikan.gambar === asal.gambar)) {
+        Object.assign(ikan, { ...asal, suka: ikan.suka });
+      }
     }
   } else {
     data = structuredClone(seed);

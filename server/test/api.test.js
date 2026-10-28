@@ -30,8 +30,8 @@ test('filter berdasarkan jenis', async () => {
 });
 
 test('pencarian berdasarkan kata kunci', async () => {
-  const data = await (await fetch(`${base}/api/ikan?q=gold`)).json();
-  assert.equal(data[0].nama, 'Avatar Gold');
+  const data = await (await fetch(`${base}/api/ikan?q=koi`)).json();
+  assert.equal(data[0].nama, 'Nemo Koi Galaxy');
 });
 
 test('menambah ikan baru', async () => {
