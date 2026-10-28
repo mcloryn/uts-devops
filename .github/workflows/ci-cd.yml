@@ -71,8 +71,8 @@ jobs:
           docker push $IMAGE:${GITHUB_SHA::7}
 
   # ================= CD: deploy otomatis ke mesin Docker =================
-  # Berjalan di self-hosted runner, yaitu laptop/PC/server kelompok yang sudah
-  # terpasang Docker dan didaftarkan di Settings > Actions > Runners.
+  # Berjalan di self-hosted runner, yaitu laptop Windows kelompok yang sudah
+  # terpasang Docker Desktop dan didaftarkan di Settings > Actions > Runners.
   deploy:
     name: Deploy Container
     needs: docker
@@ -80,23 +80,31 @@ jobs:
     runs-on: self-hosted
     defaults:
       run:
-        shell: bash   # di Windows memakai Git Bash
+        shell: powershell
+    env:
+      TAG: ${{ secrets.DOCKERHUB_USERNAME }}/galeri-cupang:latest
     steps:
+      - name: Cek Docker
+        run: docker version
+
       - name: Pull image terbaru
-        run: docker pull $IMAGE:latest
+        run: docker pull $env:TAG
 
       - name: Ganti container lama dengan yang baru
         run: |
-          docker rm -f galeri-cupang || true
-          docker run -d --name galeri-cupang --restart unless-stopped \
-            -p 8080:3000 -v cupang-data:/data $IMAGE:latest
+          $lama = docker ps -aq --filter "name=^galeri-cupang$"
+          if ($lama) { docker rm -f galeri-cupang | Out-Null }
+          docker run -d --name galeri-cupang --restart unless-stopped `
+            -p 8080:3000 -v cupang-data:/data $env:TAG
 
       - name: Verifikasi deploy
         run: |
-          for i in $(seq 1 15); do
-            docker inspect --format '{{.State.Health.Status}}' galeri-cupang | grep -q healthy && exit 0
-            sleep 2
-          done
+          for ($i = 0; $i -lt 20; $i++) {
+            $status = docker inspect --format "{{.State.Health.Status}}" galeri-cupang
+            Write-Host "Status container: $status"
+            if ($status -eq "healthy") { exit 0 }
+            Start-Sleep -Seconds 3
+          }
           docker logs galeri-cupang
           exit 1
 
