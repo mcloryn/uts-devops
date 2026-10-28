@@ -1,4 +1,4 @@
-# Galeri Ikan Cupang
+# Galeri Ikan Cupang Ganas
 
 Aplikasi web galeri ikan cupang (Betta splendens): menampilkan koleksi jenis cupang,
 pencarian, filter berdasarkan jenis, detail ikan, tombol suka, serta menambah dan
