@@ -33,7 +33,7 @@ COPY server/package.json ./
 COPY server/src ./src
 COPY --from=client-build /client/dist ./public
 
-# Jalankan sebagai user non-root bawaan image node
+# Jalankan sebagai user non-root bawaan image node nya
 RUN mkdir -p /data && chown node:node /data
 USER node
 
@@ -42,3 +42,4 @@ VOLUME ["/data"]
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1
 CMD ["node", "src/index.js"]
+
