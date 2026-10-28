@@ -1,4 +1,4 @@
-import BettaSvg from './BettaSvg.jsx';
+import FotoIkan from './FotoIkan.jsx';
 import { rupiah } from '../api.js';
 
 export default function DetailModal({ ikan, onTutup, onHapus }) {
@@ -8,7 +8,7 @@ export default function DetailModal({ ikan, onTutup, onHapus }) {
       <div className="modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
         <button className="tutup" onClick={onTutup} aria-label="Tutup">×</button>
         <div className="modal-gambar">
-          {ikan.gambar ? <img src={ikan.gambar} alt={ikan.nama} /> : <BettaSvg hex={ikan.hex} jenis={ikan.jenis} />}
+          <FotoIkan ikan={ikan} />
         </div>
         <span className="badge">{ikan.jenis}</span>
         <h2>{ikan.nama}</h2>

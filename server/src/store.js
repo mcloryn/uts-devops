@@ -7,6 +7,11 @@ export function createStore(filePath) {
   let data;
   if (filePath && fs.existsSync(filePath)) {
     data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    // Data lama (dari versi sebelumnya) belum punya foto: lengkapi dari data awal.
+    for (const ikan of data) {
+      const asal = seed.find((s) => s.id === ikan.id && s.nama === ikan.nama);
+      if (asal && !ikan.gambar) ikan.gambar = asal.gambar;
+    }
   } else {
     data = structuredClone(seed);
     save();

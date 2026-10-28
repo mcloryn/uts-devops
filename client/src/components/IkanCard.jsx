@@ -1,11 +1,11 @@
-import BettaSvg from './BettaSvg.jsx';
+import FotoIkan from './FotoIkan.jsx';
 import { rupiah } from '../api.js';
 
 export default function IkanCard({ ikan, onBuka, onSuka }) {
   return (
     <article className="card">
       <button className="card-gambar" onClick={() => onBuka(ikan)} aria-label={`Lihat detail ${ikan.nama}`}>
-        {ikan.gambar ? <img src={ikan.gambar} alt={ikan.nama} /> : <BettaSvg hex={ikan.hex} jenis={ikan.jenis} />}
+        <FotoIkan ikan={ikan} />
       </button>
       <div className="card-isi">
         <span className="badge">{ikan.jenis}</span>
