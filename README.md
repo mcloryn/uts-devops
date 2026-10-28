@@ -2,7 +2,7 @@
 
 Aplikasi web galeri ikan cupang (Betta splendens): menampilkan koleksi jenis cupang,
 pencarian, filter berdasarkan jenis, detail ikan, tombol suka, serta menambah dan
-menghapus ikan. Dibuat untuk UTS Pengembangan dan Operasi (IF-B Pagi 2026/2027).
+menghapus ikan. Dibuat untuk UTS Pengembangan dan Operasi (IF-B Pagi).
 
 - **Frontend:** React 18 + Vite
 - **Backend:** Node.js 22 + Express (REST API, data JSON di volume `/data`)
