@@ -1,0 +1,104 @@
+name: CI/CD Galeri Ikan Cupang
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/galeri-cupang
+
+jobs:
+  # ================= CI 1: test backend & build frontend =================
+  test:
+    name: Test & Build Kode
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Test API (server)
+        working-directory: server
+        run: |
+          npm ci
+          npm test
+
+      - name: Build React (client)
+        working-directory: client
+        run: |
+          npm ci
+          npm run build
+
+  # ================= CI 2: build image, uji container, push ke Docker Hub =================
+  docker:
+    name: Build & Push Image Docker
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build --build-arg APP_VERSION=${GITHUB_SHA::7} -t galeri-cupang:ci .
+
+      - name: Smoke test container
+        run: |
+          docker run -d --name smoke -p 3000:3000 galeri-cupang:ci
+          for i in $(seq 1 15); do
+            if curl -fs http://localhost:3000/api/health; then
+              curl -fs http://localhost:3000/ | grep -q "Galeri Ikan Cupang" && exit 0
+            fi
+            sleep 2
+          done
+          docker logs smoke
+          exit 1
+
+      - name: Login Docker Hub
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push image (tag latest + SHA commit)
+        if: github.event_name == 'push'
+        run: |
+          docker tag galeri-cupang:ci $IMAGE:latest
+          docker tag galeri-cupang:ci $IMAGE:${GITHUB_SHA::7}
+          docker push $IMAGE:latest
+          docker push $IMAGE:${GITHUB_SHA::7}
+
+  # ================= CD: deploy otomatis ke mesin Docker =================
+  # Berjalan di self-hosted runner, yaitu laptop/PC/server kelompok yang sudah
+  # terpasang Docker dan didaftarkan di Settings > Actions > Runners.
+  deploy:
+    name: Deploy Container
+    needs: docker
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    defaults:
+      run:
+        shell: bash   # di Windows memakai Git Bash
+    steps:
+      - name: Pull image terbaru
+        run: docker pull $IMAGE:latest
+
+      - name: Ganti container lama dengan yang baru
+        run: |
+          docker rm -f galeri-cupang || true
+          docker run -d --name galeri-cupang --restart unless-stopped \
+            -p 8080:3000 -v cupang-data:/data $IMAGE:latest
+
+      - name: Verifikasi deploy
+        run: |
+          for i in $(seq 1 15); do
+            docker inspect --format '{{.State.Health.Status}}' galeri-cupang | grep -q healthy && exit 0
+            sleep 2
+          done
+          docker logs galeri-cupang
+          exit 1
+
+      - name: Bersihkan image lama
+        run: docker image prune -f

@@ -1,0 +1,13 @@
+services:
+  galeri-cupang:
+    image: ${DOCKERHUB_USERNAME:-local}/galeri-cupang:latest
+    build: .
+    container_name: galeri-cupang
+    ports:
+      - "8080:3000"
+    volumes:
+      - cupang-data:/data
+    restart: unless-stopped
+
+volumes:
+  cupang-data:
