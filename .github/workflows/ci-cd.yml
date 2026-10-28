@@ -10,7 +10,7 @@ env:
   IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/galeri-cupang
 
 jobs:
-  # ================= CI 1: test backend & build frontend =================
+  # ================= CI 1: test backend & build frontend ==================
   test:
     name: Test & Build Kode
     runs-on: ubuntu-latest
